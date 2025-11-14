@@ -35,24 +35,37 @@ Aplikasi web berbasis Streamlit yang mengintegrasikan Google Gemini AI untuk ana
 ```
 
 ## Features
-### Current Features
-- ✅ Chat interface dengan Gemini AI
-- ✅ Upload dan preview CSV files
-- ✅ Auto-analysis data dengan AI
-- ✅ Chat history management
-- ✅ Responsive UI dengan sidebar
+### Current Features (Updated: November 14, 2025)
+- ✅ **Overview Dashboard** - Data quality metrics, quick insights dengan Gemini AI
+- ✅ **Data Profiling** - Comprehensive data analysis, correlation heatmaps, automated cleaning
+- ✅ **EDA (Exploratory Data Analysis)** - Distributions, relationships, comparisons dengan visualizations
+- ✅ **ML Models** - Classification, Regression, Clustering dengan Random Forest, Logistic Regression, SVM
+- ✅ **Advanced ML** - XGBoost, LightGBM, Neural Networks (MLP), Ensemble methods
+- ✅ **Time Series Analysis** - ARIMA, SARIMA, seasonal decomposition, Auto ARIMA, stationarity tests
+- ✅ **Text Analytics** - Sentiment analysis, WordCloud, bigrams, NLP features
+- ✅ **Export Center** - Export cleaned data, trained models, comprehensive reports
+- ✅ **Gemini AI Integration** - Chat assistant untuk data insights and analysis guidance
+- ✅ **Rate Limiting** - Smart API rate management
+- ✅ **Responsive UI** - Mobile-friendly interface
 
-### Future Enhancements (dari user)
-Daftar fitur yang direncanakan:
-- Export hasil analisis (cleaned data, model, report)
-- Deep learning integration (TensorFlow/Keras)
-- Advanced ML algorithms dan hyperparameter tuning
-- Time series analysis (ARIMA, Prophet)
-- Database integration (PostgreSQL)
-- Real-time collaboration
-- REST API endpoints
-- Cloud storage integration
-- Enhanced security features
+### Newly Added Advanced Features
+- 🎯 **XGBoost & LightGBM** - State-of-the-art gradient boosting models
+- 🧠 **Neural Networks** - Multi-layer perceptron untuk classification/regression
+- 📈 **Time Series Forecasting** - ARIMA, SARIMA dengan automatic parameter selection
+- 📊 **Seasonal Decomposition** - Trend, seasonal, residual analysis
+- 🤝 **Ensemble Methods** - Model combination untuk better performance
+- 🎨 **Feature Importance** - Understanding model decisions
+
+### Future Enhancements
+Fitur yang masih dalam rencana:
+- Deep Learning (TensorFlow/Keras for CNN, LSTM)
+- Prophet time series forecasting
+- PostgreSQL database integration untuk project persistence
+- Bayesian Optimization (Optuna) untuk hyperparameter tuning
+- REST API endpoints untuk model deployment
+- Cloud storage integration (Google Drive, AWS S3)
+- Real-time collaboration features
+- Enhanced security dan authentication
 
 ## Configuration
 - **Port**: 5000 (required untuk Replit)
