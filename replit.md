@@ -1,23 +1,45 @@
-# AI Data Analysis Platform
+# AI Data Analysis Platform - Enterprise Edition
 
 ## Overview
-A comprehensive AI-powered data analysis platform built with Streamlit that provides automated machine learning, interactive visualizations, text analytics, and intelligent data processing with Google Gemini 2.5 Flash AI. The platform offers:
-- **AI Chat Assistant** - Conversational interface powered by Gemini 2.5 Flash with function calling
-- **Automated Machine Learning** - 10+ algorithms with automatic comparison and tuning
-- **Interactive Dashboards** - Multi-page responsive interface with comprehensive analytics
-- **Text Analytics** - Sentiment analysis, topic modeling, and word clouds
-- **Comprehensive Export** - PDF reports, Excel files, trained models, and Jupyter notebooks
-- **Multi-format Support** - CSV, Excel, JSON, Parquet, TSV file handling
-- **Advanced Cleaning** - Automated data profiling and quality assessment
+Production-ready AI-powered data analysis platform with enterprise features including user authentication, project persistence, deep learning, advanced time series analysis, and REST API. Built with Streamlit, PostgreSQL, and Google Gemini 2.5 Flash AI.
+
+### Core Features
+- **🔐 Authentication & RBAC** - Multi-user system with admin/analyst/viewer roles
+- **💾 Project Management** - Save/load projects, datasets, and models to PostgreSQL database
+- **🧠 Deep Learning** - TensorFlow/Keras neural networks + sklearn MLP fallback
+- **📈 Advanced Time Series** - Prophet forecasting, LSTM, stationarity tests (ADF/KPSS), ACF/PACF
+- **🤖 Automated ML** - 10+ algorithms with automatic comparison and tuning
+- **📊 Interactive Dashboards** - Multi-page responsive interface
+- **💬 AI Chat Assistant** - Gemini 2.5 Flash with function calling
+- **📝 Text Analytics** - Sentiment analysis, topic modeling, word clouds
+- **📥 Export System** - PDF reports, Excel, trained models, Jupyter notebooks
+- **🔒 Security** - Password hashing (bcrypt), data encryption (Fernet), JWT tokens, audit logs
+- **🌐 REST API** - FastAPI endpoints for model deployment and data management
 
 ## Tech Stack
-- **Frontend**: Streamlit (responsive web framework)
-- **AI**: Google Gemini 2.5 Flash (with function calling)
+### Backend & Infrastructure
+- **Database**: PostgreSQL (Neon) with SQLAlchemy ORM
+- **Authentication**: bcrypt password hashing, JWT tokens, role-based access control
+- **Encryption**: Fernet symmetric encryption for sensitive data
+- **API**: FastAPI with automatic OpenAPI documentation
+- **Task Queue**: Celery + Redis (configured for scheduled tasks)
+
+### ML & Data Science
+- **Deep Learning**: TensorFlow/Keras, sklearn MLPClassifier/Regressor
+- **Time Series**: Facebook Prophet, LSTM/GRU, statsmodels (ARIMA/SARIMA)
 - **ML Libraries**: scikit-learn, XGBoost, LightGBM
-- **Visualization**: Plotly (interactive charts)
-- **Data Processing**: Pandas, NumPy
-- **Text Analytics**: TextBlob, WordCloud
-- **Export**: FPDF, openpyxl, joblib
+- **Data Processing**: Pandas, NumPy, Dask (for big data)
+
+### Frontend & Visualization
+- **Framework**: Streamlit (responsive web framework)
+- **Charts**: Plotly (interactive), Matplotlib, Seaborn
+- **AI**: Google Gemini 2.5 Flash with function calling
+- **NLP**: TextBlob, WordCloud
+
+### Export & Utilities
+- **Reports**: FPDF (PDF generation), openpyxl (Excel)
+- **Serialization**: joblib, pickle
+- **Testing**: pytest
 - **Python**: 3.11+
 
 ## Setup

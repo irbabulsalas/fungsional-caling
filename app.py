@@ -14,6 +14,10 @@ from modules.visualizations import (
 )
 from modules.gemini_integration import chat_with_gemini, get_data_context
 from modules.export_handler import create_export_center
+from modules.deep_learning import deep_learning, DeepLearningModels
+from modules.advanced_timeseries import advanced_timeseries, AdvancedTimeSeriesModels
+from database.auth_manager import auth_manager, AuthManager
+from database.session_manager import session_manager, SessionManager
 from utils.helpers import initialize_session_state, get_numeric_columns, get_categorical_columns, calculate_data_quality_score
 from utils.rate_limiter import initialize_rate_limiter, can_make_request, show_rate_limit_status, update_rate_limit, get_remaining_requests
 from utils.error_handler import safe_execute, validate_dataframe
@@ -88,6 +92,15 @@ st.markdown("""
 initialize_session_state()
 initialize_rate_limiter()
 
+try:
+    from database.db_manager import db_manager
+    if db_manager is not None:
+        db_manager.create_tables()
+        AuthManager.init_session()
+except Exception as e:
+    st.sidebar.warning(f"⚠️ Database features unavailable: {str(e)}")
+    pass
+
 def show_header():
     col1, col2, col3 = st.columns([1, 6, 1])
     
@@ -115,7 +128,7 @@ show_header()
 with st.sidebar:
     st.title("📊 Navigation")
     
-    pages = ["📈 Overview", "🔍 Data Profiling", "📊 EDA", "🤖 ML Models", "🚀 Advanced ML", "⏰ Time Series", "📝 Text Analytics", "📥 Export Center"]
+    pages = ["📈 Overview", "🔍 Data Profiling", "📊 EDA", "🤖 ML Models", "🚀 Advanced ML", "⏰ Time Series", "🧠 Deep Learning", "📈 Advanced TS", "📝 Text Analytics", "💾 Projects", "📥 Export Center"]
     st.session_state.current_page = st.radio("Go to", pages, label_visibility="collapsed")
     
     st.markdown("---")
@@ -175,6 +188,8 @@ with st.sidebar:
         - `Ctrl+/`: Search help
         - `Ctrl+Enter`: Send chat message
         """)
+    
+    AuthManager.render_auth_sidebar()
 
 df = st.session_state.get('cleaned_data')
 
@@ -843,6 +858,118 @@ elif st.session_state.current_page == "⏰ Time Series":
 elif st.session_state.current_page == "📥 Export Center":
     st.title("📥 Export Center")
     create_export_center(df, st.session_state.get('trained_models'))
+
+elif st.session_state.current_page == "🧠 Deep Learning":
+    if df is not None and not df.empty:
+        all_cols = df.columns.tolist()
+        if all_cols:
+            target_col = st.selectbox("Select Target Column", all_cols, key="dl_target")
+            DeepLearningModels.create_deep_learning_dashboard(df, target_col)
+        else:
+            st.warning("⚠️ No columns available for deep learning")
+    else:
+        st.warning("⚠️ Please upload data first!")
+
+elif st.session_state.current_page == "📈 Advanced TS":
+    if df is not None and not df.empty:
+        AdvancedTimeSeriesModels.create_time_series_dashboard(df)
+    else:
+        st.warning("⚠️ Please upload data first!")
+
+elif st.session_state.current_page == "💾 Projects":
+    st.title("💾 Save & Load Projects")
+    
+    if not AuthManager.is_authenticated():
+        st.warning("⚠️ Please login to save and load projects")
+    else:
+        tab1, tab2, tab3, tab4 = st.tabs(["💾 Save Project", "📂 Load Project", "📊 My Datasets", "🤖 My Models"])
+        
+        with tab1:
+            st.subheader("💾 Save Current Project")
+            
+            project_name = st.text_input("Project Name")
+            project_desc = st.text_area("Description (optional)")
+            is_public = st.checkbox("Make Public")
+            
+            if st.button("💾 Save Project", type="primary"):
+                if project_name:
+                    project_id = SessionManager.save_project(project_name, project_desc, is_public)
+                    if project_id:
+                        st.success(f"✅ Project saved! ID: {project_id}")
+                        
+                        if df is not None:
+                            dataset_id = SessionManager.save_dataset(
+                                project_id, 
+                                f"{project_name}_dataset",
+                                df
+                            )
+                            if dataset_id:
+                                st.success(f"✅ Dataset saved! ID: {dataset_id}")
+                        
+                        if st.session_state.get('trained_models'):
+                            for model_name, model_data in st.session_state['trained_models'].items():
+                                if 'model' in model_data:
+                                    model_id = SessionManager.save_model(
+                                        project_id,
+                                        model_name,
+                                        model_data['model'],
+                                        'classification',
+                                        model_name,
+                                        model_data.get('metrics', {})
+                                    )
+                                    if model_id:
+                                        st.success(f"✅ Model '{model_name}' saved! ID: {model_id}")
+                else:
+                    st.warning("⚠️ Please enter project name")
+        
+        with tab2:
+            st.subheader("📂 Load Projects")
+            projects = SessionManager.list_user_projects()
+            
+            if projects:
+                for proj in projects:
+                    with st.expander(f"📁 {proj['name']}"):
+                        st.write(f"**Description:** {proj['description']}")
+                        st.write(f"**Created:** {proj['created_at']}")
+                        st.write(f"**Updated:** {proj['updated_at']}")
+            else:
+                st.info("ℹ️ No saved projects yet")
+        
+        with tab3:
+            st.subheader("📊 My Datasets")
+            datasets = SessionManager.list_user_datasets()
+            
+            if datasets:
+                for ds in datasets:
+                    col1, col2, col3 = st.columns([3, 2, 1])
+                    with col1:
+                        st.write(f"**{ds['name']}**")
+                    with col2:
+                        st.write(f"{ds['rows']} rows × {ds['columns']} cols")
+                    with col3:
+                        if st.button("📥 Load", key=f"load_ds_{ds['id']}"):
+                            loaded_df = SessionManager.load_dataset(ds['id'])
+                            if loaded_df is not None:
+                                st.session_state.uploaded_data = loaded_df
+                                st.session_state.cleaned_data = loaded_df.copy()
+                                st.success("✅ Dataset loaded!")
+                                st.rerun()
+            else:
+                st.info("ℹ️ No saved datasets yet")
+        
+        with tab4:
+            st.subheader("🤖 My Models")
+            models = SessionManager.list_user_models()
+            
+            if models:
+                for mdl in models:
+                    with st.expander(f"🤖 {mdl['name']}"):
+                        st.write(f"**Algorithm:** {mdl['algorithm']}")
+                        st.write(f"**Type:** {mdl['model_type']}")
+                        st.write(f"**Metrics:** {mdl['metrics']}")
+                        st.write(f"**Created:** {mdl['created_at']}")
+            else:
+                st.info("ℹ️ No saved models yet")
 
 st.markdown("---")
 
